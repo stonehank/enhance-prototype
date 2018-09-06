@@ -1,30 +1,30 @@
 function createBasicController(enhanceClass){
-  let curClass
+  let CurClass
   if(typeof enhanceClass==='string'){
     switch(true){
       case /[Ss]tring/.test(enhanceClass) :
-        curClass=String
+        CurClass=String
         break;
       case /[Nn]umber/.test(enhanceClass) :
-        curClass=Number
+        CurClass=Number
         break;
     }
   }
 
-  let custom=Object.assign({},Object.getPrototypeOf(curClass.prototype))
-  Object.setPrototypeOf(curClass.prototype,custom)
+  let enhancePrototype=Object.assign({},Object.getPrototypeOf(CurClass.prototype))
+  Object.setPrototypeOf(CurClass.prototype,enhancePrototype)
   return {
     addMethod:function(key,value){
       // if(typeof value==='function')value=value.bind(null,this)
-      custom[key]=value
+      enhancePrototype[key]=value
     },
     removeMethod:function(key){
       if(!key){
-        let customProto=Object.getPrototypeOf(custom)
-        custom=Object.create(customProto)
-        Object.setPrototypeOf( curClass.prototype,custom)
+        let originalProto=Object.getPrototypeOf(enhancePrototype)
+        enhancePrototype=Object.create(originalProto)
+        Object.setPrototypeOf( CurClass.prototype,enhancePrototype)
       }
-      delete(custom[key])
+      delete(enhancePrototype[key])
     }
   }
 }
@@ -32,18 +32,18 @@ function createBasicController(enhanceClass){
 function createEnhance(enhanceClass){
   let os=Object.prototype.toString
   let entity
-  let curClass
+  let CurClass
   return function Enhance(len){
     if(typeof enhanceClass==='string'){
       switch(true){
         case /[Oo]bject/.test(enhanceClass) :
           entity=Object.create(null)
-          curClass=Object
+          CurClass=Object
           break;
         case /[Aa]rray/.test(enhanceClass) :
           let argsNum=arguments.length
           entity=new Array(argsNum?len:0)
-          curClass=Array
+          CurClass=Array
           break;
       }
     }
@@ -80,7 +80,7 @@ function createEnhance(enhanceClass){
 
     Object.setPrototypeOf(entity,controllerProto)
     Object.setPrototypeOf(controllerProto,enhanceProto)
-    Object.setPrototypeOf(enhanceProto,curClass.prototype)
+    Object.setPrototypeOf(enhanceProto,CurClass.prototype)
     return entity
   }
 }
