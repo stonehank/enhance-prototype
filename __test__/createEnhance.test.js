@@ -1,69 +1,75 @@
 const {createEnhance}=require('../index.js')
 
 test('create Array,init string', () => {
-  let cusArr=createEnhance('Array')('firstValue')
+  let controller=createEnhance('Array')
+  let cusArr=controller.createEntity('firstValue')
   expect(cusArr.length).toBe(1);
   expect(cusArr[0]).toBe('firstValue');
 });
 
 test('create Array,init length 5', () => {
-  let cusArr=createEnhance('Array')(5)
+  let controller=createEnhance('Array')
+  let cusArr=controller.createEntity(5)
   expect(cusArr.length).toBe(5);
 });
 
 test('add custom method', () => {
-  let cusArr=createEnhance('Array')()
+  let controller=createEnhance('Array')
+  let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
   cusArr.push(3)
-  cusArr.addMethod('getFirst',function(arr){
-    return arr[0]
+  controller.addMethod('getFirst',function(){
+    return this[0]
   })
   expect(cusArr.getFirst()).toBe(1);
 });
 
 test('remove single method', () => {
-  let cusArr=createEnhance('Array')()
+  let controller=createEnhance('Array')
+  let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
   cusArr.push(3)
-  cusArr.addMethod('getFirst',function(arr){
-    return arr[0]
+  controller.addMethod('getFirst',function(){
+    return this[0]
   })
-  cusArr.addMethod('getLast',function(arr){
-    return arr[arr.length-1]
+  controller.addMethod('getLast',function(){
+    return this[this.length-1]
   })
-  cusArr.removeMethod('getFirst')
+  controller.removeMethod('getFirst')
   expect(cusArr.getFirst).toBe(undefined);
   expect(cusArr.getLast()).toBe(3);
 });
 
 test('remove all', () => {
-  let cusArr=createEnhance('Array')()
+  let controller=createEnhance('Array')
+  let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
   cusArr.push(3)
-  cusArr.addMethod('getFirst',function(arr){
-    return arr[0]
+  controller.addMethod('getFirst',function(){
+    return this[0]
   })
-  cusArr.addMethod('getLast',function(arr){
-    return arr[arr.length-1]
+  controller.addMethod('getLast',function(){
+    return this[this.length-1]
   })
-  cusArr.removeMethod()
+  controller.removeMethod()
   expect(cusArr.getFirst).toBe(undefined);
   expect(cusArr.getLast).toBe(undefined);
 });
 
 test('to raw structure', () => {
-  let cusArr=createEnhance('Array')()
+  let controller=createEnhance('Array')
+  let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
   cusArr.push(3)
-  cusArr.addMethod('getFirst',function(arr){
-    return arr[0]
+  controller.addMethod('getFirst',function(){
+    return this[0]
   })
-  cusArr.addMethod('getLast',function(arr){
-    return arr[arr.length-1]
+  controller.addMethod('getLast',function(){
+    return this[this.length-1]
   })
   let rawArr=cusArr.toRaw()
   expect(rawArr.length).toBe(3);
@@ -76,64 +82,69 @@ test('to raw structure', () => {
 
 
 test('create Object', () => {
-  let cusObj=createEnhance('object')()
+  let controller=createEnhance('object')
+  let cusObj=controller.createEntity()
   expect(Object.prototype.toString.call(cusObj)).toBe('[object Object]');
 });
 
 test('add custom method', () => {
-  let cusObj=createEnhance('object')()
+  let controller=createEnhance('object')
+  let cusObj=controller.createEntity()
   cusObj.x=1
   cusObj.y=[1,2]
   cusObj.z=function(){}
-  cusObj.addMethod('getSize',function(obj){
-    return Object.keys(obj).length
+  controller.addMethod('getSize',function(){
+    return Object.keys(this).length
   })
   expect(cusObj.getSize()).toBe(3);
 });
 
 test('remove specified method', () => {
-  let cusObj=createEnhance('object')()
+  let controller=createEnhance('object')
+  let cusObj=controller.createEntity()
   cusObj.x=1
   cusObj.y=[1,2]
   cusObj.z=function(){}
-  cusObj.addMethod('getSize',function(obj){
-    return Object.keys(obj).length
+  controller.addMethod('getSize',function(){
+    return Object.keys(this).length
   })
-  cusObj.addMethod('getFunctionKey',function(obj){
-    return Object.keys(obj).filter(k=>typeof obj[k]==='function')
+  controller.addMethod('getFunctionKey',function(){
+    return Object.keys(this).filter(k=>typeof this[k]==='function')
   })
   expect(cusObj.getFunctionKey()).toEqual(['z']);
-  cusObj.removeMethod('getFunctionKey')
+  controller.removeMethod('getFunctionKey')
   expect(cusObj.getFunctionKey).toBe(undefined);
 });
 
 test('remove all', () => {
-  let cusObj=createEnhance('object')()
+  let controller=createEnhance('object')
+  let cusObj=controller.createEntity()
   cusObj.x=1
   cusObj.y=[1,2]
   cusObj.z=function(){}
-  cusObj.addMethod('getSize',function(obj){
-    return Object.keys(obj).length
+  controller.addMethod('getSize',function(){
+    return Object.keys(this).length
   })
-  cusObj.addMethod('getFunctionKey',function(obj){
-    return Object.keys(obj).filter(k=>typeof obj[k]==='function')
+  controller.addMethod('getFunctionKey',function(){
+    return Object.keys(this).filter(k=>typeof this[k]==='function')
   })
 
-  cusObj.removeMethod()
+  controller.removeMethod()
   expect(cusObj.getSize).toBe(undefined);
   expect(cusObj.getFunctionKey).toBe(undefined);
 });
 
 test('to raw structure,is sallowCopy', () => {
-  let cusObj=createEnhance('object')()
+  let controller=createEnhance('object')
+  let cusObj=controller.createEntity()
   cusObj.x=1
   cusObj.y=[1,2]
   cusObj.z=function(){}
-  cusObj.addMethod('getSize',function(obj){
-    return Object.keys(obj).length
+  controller.addMethod('getSize',function(){
+    return Object.keys(this).length
   })
-  cusObj.addMethod('getFunctionKey',function(obj){
-    return Object.keys(obj).filter(k=>typeof obj[k]==='function')
+  controller.addMethod('getFunctionKey',function(){
+    return Object.keys(this).filter(k=>typeof this[k]==='function')
   })
 
   let rawObj=cusObj.toRaw()
@@ -142,4 +153,30 @@ test('to raw structure,is sallowCopy', () => {
   expect(rawObj.addMethod).toBe(undefined);
   expect(rawObj.getFunctionKey).toBe(undefined);
   expect(rawObj.getSize).toBe(undefined);
+});
+
+
+test('multi entity', () => {
+  let controller=createEnhance('object')
+  let cusObj=controller.createEntity()
+  let cusObj2=cusObj.constructor()
+  cusObj.x=1
+  cusObj.y=[1,2]
+  cusObj.z=function(){}
+  controller.addMethod('getSize',function(){
+    return Object.keys(this).length
+  })
+  controller.addMethod('getFunctionKey',function(){
+    return Object.keys(this).filter(k=>typeof this[k]==='function')
+  })
+  let cusObj3=cusObj2.constructor()
+  expect(typeof cusObj2.getSize).toBe('function');
+  expect(typeof cusObj2.getFunctionKey).toBe('function');
+  expect(typeof cusObj3.getFunctionKey).toBe('function');
+  controller.removeMethod()
+  expect(cusObj.getSize).toBe(undefined);
+  expect(cusObj.getFunctionKey).toBe(undefined);
+  expect(cusObj2.getSize).toBe(undefined);
+  expect(cusObj2.getFunctionKey).toBe(undefined);
+  expect(cusObj3.getFunctionKey).toBe(undefined);
 });

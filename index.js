@@ -10,7 +10,6 @@ function createBasicController(enhanceClass){
         break;
     }
   }
-
   let enhancePrototype=Object.assign({},Object.getPrototypeOf(CurClass.prototype))
   Object.setPrototypeOf(CurClass.prototype,enhancePrototype)
   return {
@@ -31,9 +30,9 @@ function createBasicController(enhanceClass){
 
 function createEnhance(enhanceClass){
   let os=Object.prototype.toString
-  let entity
-  let CurClass
-  return function Enhance(len){
+  let entity,CurClass
+  let enhanceProto=Object.create(null)
+  let Enhance=function(len){
     if(typeof enhanceClass==='string'){
       switch(true){
         case /[Oo]bject/.test(enhanceClass) :
@@ -47,43 +46,45 @@ function createEnhance(enhanceClass){
           break;
       }
     }
-    let enhanceProto=Object.create(null)
-    let controllerProto={
-      constructor:Enhance,
-      addMethod:function(key,value){
-        if(typeof value==='function')value=value.bind(null,this)
-        enhanceProto[key]=value
-        return this
-      },
-      removeMethod:function(key){
-        if(!key){
-          let originalProto=Object.getPrototypeOf(enhanceProto)
-          enhanceProto=Object.create(originalProto)
-          Object.setPrototypeOf(controllerProto,enhanceProto)
-          // enhanceProto.constructor=Enhance
-          return this
-        }
-        delete(enhanceProto[key])
-        return this
-      },
-      toRaw:function () {
-        let type=os.call(this)
-        switch(type.substring(8,type.length-1)){
-          // 浅拷贝，还是引用关系
-          case 'Object':
-            return Object.assign({},this)
-          case 'Array':
-            return this.slice()
-        }
-      }
-    }
-
-    Object.setPrototypeOf(entity,controllerProto)
-    Object.setPrototypeOf(controllerProto,enhanceProto)
+    Object.setPrototypeOf(entity,enhanceProto)
     Object.setPrototypeOf(enhanceProto,CurClass.prototype)
     return entity
   }
-}
+  enhanceProto.constructor=Enhance
+  enhanceProto.toRaw=function () {
+    let type=os.call(this)
+    switch(type.substring(8,type.length-1)){
+      // 浅拷贝，还是引用关系
+      case 'Object':
+        return Object.assign({},this)
+      case 'Array':
+        return this.slice()
+    }
+  }
+  return  {
+    createEntity:function(len){
+      let argsNum=arguments.length
+      return Enhance(argsNum?len:0)
+    },
+    addMethod:function(key,value){
+      // if(typeof value==='function')value=value.bind(null,this)
+      enhanceProto[key]=value
+      return this
+    },
+    removeMethod:function(key){
+      if(!key){
+        for(let k in enhanceProto){
+          if(k!=='constructor' && k!=='toRaw')
+          delete(enhanceProto[k])
+        }
+        return this
+      }
+      delete(enhanceProto[key])
+      return this
+    }
+  }
+  }
+
 
 module.exports={
   createBasicController,
