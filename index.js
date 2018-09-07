@@ -29,9 +29,9 @@ function createBasicController(enhanceClass){
 }
 
 function createEnhance(enhanceClass){
-  let os=Object.prototype.toString
-  let entity,CurClass
-  let enhanceProto=Object.create(null)
+  let os=Object.prototype.toString;
+  let entity,CurClass;
+  let enhanceProto=Object.create(null);
   let Enhance=function(len){
     if(typeof enhanceClass==='string'){
       switch(true){
@@ -49,18 +49,24 @@ function createEnhance(enhanceClass){
     Object.setPrototypeOf(entity,enhanceProto)
     Object.setPrototypeOf(enhanceProto,CurClass.prototype)
     return entity
-  }
-  enhanceProto.constructor=Enhance
-  enhanceProto.toRaw=function () {
-    let type=os.call(this)
-    switch(type.substring(8,type.length-1)){
-      // 浅拷贝，还是引用关系
-      case 'Object':
-        return Object.assign({},this)
-      case 'Array':
-        return this.slice()
+  };
+  Object.defineProperties(enhanceProto,{
+    constructor:{
+      value:Enhance
+    },
+    toRaw:{
+      value:function () {
+        let type=os.call(this)
+        switch(type.substring(8,type.length-1)){
+          // 浅拷贝
+          case 'Object':
+            return Object.assign({},this)
+          case 'Array':
+            return this.slice()
+        }
+      }
     }
-  }
+  })
   return  {
     createEntity:function(len){
       let argsNum=arguments.length
@@ -74,7 +80,7 @@ function createEnhance(enhanceClass){
     removeMethod:function(key){
       if(!key){
         for(let k in enhanceProto){
-          if(k!=='constructor' && k!=='toRaw')
+          // if(k!=='constructor' && k!=='toRaw')
           delete(enhanceProto[k])
         }
         return this

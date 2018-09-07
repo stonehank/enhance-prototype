@@ -131,6 +131,8 @@ test('remove all', () => {
 
   controller.removeMethod()
   expect(cusObj.getSize).toBe(undefined);
+  expect(cusObj.constructor).not.toBe(undefined);
+  expect(cusObj.toRaw).not.toBe(undefined);
   expect(cusObj.getFunctionKey).toBe(undefined);
 });
 
