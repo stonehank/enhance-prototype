@@ -59,6 +59,34 @@ test('remove all', () => {
   expect(cusArr.getLast).toBe(undefined);
 });
 
+test('convert to enhance', () => {
+  let controller=createEnhance('Array')
+  let rawArr=[1,2,3,4,5]
+  controller.addMethod('getLast',function(){
+    return this[this.length-1]
+  })
+  let enhanceArr=controller.toEnhance(rawArr)
+  expect(enhanceArr.getLast).not.toBe(undefined);
+});
+
+
+// test('will slice convert to raw?', () => {
+//   let controller=createEnhance('Array')
+//   let cusArr=controller.createEntity()
+//   cusArr.push(1)
+//   cusArr.push(2)
+//   cusArr.push(3)
+//   controller.addMethod('getFirst',function(){
+//     return this[0]
+//   })
+//   controller.addMethod('getLast',function(){
+//     return this[this.length-1]
+//   })
+//   let xArr=cusArr.slice()
+//   expect(xArr.getFirst).not.toBe(undefined);
+// });
+
+
 test('to raw structure', () => {
   let controller=createEnhance('Array')
   let cusArr=controller.createEntity()

@@ -80,17 +80,37 @@ function createEnhance(enhanceClass){
     removeMethod:function(key){
       if(!key){
         for(let k in enhanceProto){
-          // if(k!=='constructor' && k!=='toRaw')
           delete(enhanceProto[k])
         }
         return this
       }
       delete(enhanceProto[key])
       return this
+    },
+    toEnhance:function (structure) {
+      let structureType=os.call(structure)
+      if(structureType==="[object Object]"){
+        return this.createEntity(structure)
+      }else if(structureType==="[object Array]"){
+        return this.createEntity(...structure)
+      }
     }
   }
   }
 
+  function addMethodBefore(func,extraMethod,context=null){
+    return function(...args){
+      extraMethod()
+      func.call(context,...args)
+    }
+  }
+
+  function addMethodAfter(func,extraMethod,context=null){
+    return function(...args){
+      func.call(context,...args)
+      extraMethod()
+    }
+  }
 
 module.exports={
   createBasicController,
