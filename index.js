@@ -29,52 +29,38 @@ function createBasicController(enhanceClass){
 }
 
 function createEnhance(enhanceClass){
-  let os=Object.prototype.toString;
-  let entity,CurClass;
-  let enhanceProto=Object.create(null);
-  let Enhance=function(len){
-    if(typeof enhanceClass==='string'){
-      switch(true){
-        case /[Oo]bject/.test(enhanceClass) :
-          entity=Object.create(null)
-          CurClass=Object
-          break;
-        case /[Aa]rray/.test(enhanceClass) :
-          let argsNum=arguments.length
-          entity=new Array(argsNum?len:0)
-          CurClass=Array
-          break;
-      }
-    }
+
+  let controller
+
+  let enhanceProto=Object.create(enhanceClass.prototype);
+  let Enhance=function(){
+
+    let entity=enhanceClass.apply(enhanceClass,arguments)
+
     Object.setPrototypeOf(entity,enhanceProto)
-    Object.setPrototypeOf(enhanceProto,CurClass.prototype)
+
     return entity
   };
+
   Object.defineProperties(enhanceProto,{
     constructor:{
       value:Enhance
     },
     toRaw:{
       value:function () {
-        let type=os.call(this)
-        switch(type.substring(8,type.length-1)){
-          // 浅拷贝
-          case 'Object':
-            return Object.assign({},this)
-          case 'Array':
-            return this.slice()
-        }
+        return  Object.setPrototypeOf(this,enhanceClass.prototype)
       }
     }
   })
-  return  {
-    createEntity:function(len){
-      let argsNum=arguments.length
-      return Enhance(argsNum?len:0)
+
+  controller= {
+    createEntity:function(){
+      return Enhance.apply(null,arguments)
     },
     addMethod:function(key,value){
-      // if(typeof value==='function')value=value.bind(null,this)
-      enhanceProto[key]=value
+      enhanceProto[key]=function(){
+        return value.call(this,controller,...arguments)
+      }
       return this
     },
     removeMethod:function(key){
@@ -88,15 +74,15 @@ function createEnhance(enhanceClass){
       return this
     },
     toEnhance:function (structure) {
-      let structureType=os.call(structure)
-      if(structureType==="[object Object]"){
-        return this.createEntity(structure)
-      }else if(structureType==="[object Array]"){
-        return this.createEntity(...structure)
-      }
+      return Object.setPrototypeOf(structure,enhanceProto)
+    },
+    toRaw:function toRaw(enhanceStructure) {
+      return  Object.setPrototypeOf(enhanceStructure,enhanceClass.prototype)
     }
   }
-  }
+
+  return controller
+}
 
   function addMethodBefore(func,extraMethod,context=null){
     return function(...args){

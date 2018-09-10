@@ -1,20 +1,37 @@
 const {createEnhance}=require('../index.js')
 
-test('create Array,init string', () => {
-  let controller=createEnhance('Array')
-  let cusArr=controller.createEntity('firstValue')
-  expect(cusArr.length).toBe(1);
-  expect(cusArr[0]).toBe('firstValue');
+let extraMethod={
+  slice:function (controller,start=0,end) {
+    let sliceArr=Array.prototype.slice.call(this,start,end)
+    return controller.toEnhance(sliceArr)
+  },
+  concat:function (controller) {
+    let args=[].slice.call(arguments,1)
+    let concatArr=Array.prototype.concat.apply(this,args)
+    return controller.toEnhance(concatArr)
+  }
+}
+
+
+test('create Array', () => {
+  let controller=createEnhance(Array)
+  let stringArr=controller.createEntity('firstValue')
+  let undefinedArr=controller.createEntity(undefined)
+  let nullArr=controller.createEntity(null)
+  let numArr=controller.createEntity(5)
+  let emptyArr=controller.createEntity()
+  expect(stringArr.length).toBe(1);
+  expect(stringArr[0]).toBe('firstValue');
+  expect(undefinedArr[0]).toBe(undefined);
+  expect(nullArr[0]).toBe(null);
+  expect(numArr.length).toBe(5);
+  expect(emptyArr.length).toBe(0);
 });
 
-test('create Array,init length 5', () => {
-  let controller=createEnhance('Array')
-  let cusArr=controller.createEntity(5)
-  expect(cusArr.length).toBe(5);
-});
+
 
 test('add custom method', () => {
-  let controller=createEnhance('Array')
+  let controller=createEnhance(Array)
   let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
@@ -26,7 +43,7 @@ test('add custom method', () => {
 });
 
 test('remove single method', () => {
-  let controller=createEnhance('Array')
+  let controller=createEnhance(Array)
   let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
@@ -43,7 +60,7 @@ test('remove single method', () => {
 });
 
 test('remove all', () => {
-  let controller=createEnhance('Array')
+  let controller=createEnhance(Array)
   let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
@@ -59,8 +76,8 @@ test('remove all', () => {
   expect(cusArr.getLast).toBe(undefined);
 });
 
-test('convert to enhance', () => {
-  let controller=createEnhance('Array')
+test('rawArr convert to enhance', () => {
+  let controller=createEnhance(Array)
   let rawArr=[1,2,3,4,5]
   controller.addMethod('getLast',function(){
     return this[this.length-1]
@@ -70,25 +87,55 @@ test('convert to enhance', () => {
 });
 
 
-// test('will slice convert to raw?', () => {
-//   let controller=createEnhance('Array')
-//   let cusArr=controller.createEntity()
-//   cusArr.push(1)
-//   cusArr.push(2)
-//   cusArr.push(3)
-//   controller.addMethod('getFirst',function(){
-//     return this[0]
-//   })
-//   controller.addMethod('getLast',function(){
-//     return this[this.length-1]
-//   })
-//   let xArr=cusArr.slice()
-//   expect(xArr.getFirst).not.toBe(undefined);
-// });
+test(' slice should not convert to raw', () => {
+  let controller=createEnhance(Array)
+  controller.addMethod('slice',extraMethod.slice)
+  let cusArr=controller.createEntity()
+  cusArr.push(1)
+  cusArr.push(2)
+  cusArr.push(3)
+  cusArr.push(4)
+  cusArr.push(5)
+  cusArr.push(6)
+  controller.addMethod('getFirst',function(){
+    return this[0]
+  })
+  controller.addMethod('getLast',function(){
+    return this[this.length-1]
+  })
+  let xArr=cusArr.slice(2,4)
+  expect(xArr.getFirst).not.toBe(undefined);
+  expect(xArr.length).toBe(2);
+  expect(xArr).toEqual([3,4]);
+});
+
+test(' concat should not convert to raw', () => {
+  let controller=createEnhance(Array)
+  controller.addMethod('concat',extraMethod.concat)
+  let cusArr=controller.createEntity()
+  cusArr.push(1)
+  cusArr.push(2)
+  cusArr.push(3)
+  cusArr.push(4)
+  cusArr.push(5)
+  cusArr.push(6)
+  controller.addMethod('getFirst',function(){
+    return this[0]
+  })
+  controller.addMethod('getLast',function(){
+    return this[this.length-1]
+  })
+  let xArr=cusArr.concat([7,8],[9,10])
+  expect(xArr.getFirst).not.toBe(undefined);
+  expect(xArr.length).toBe(10);
+  expect(xArr[8]).toBe(9);
+  expect(xArr[5]).toBe(6);
+});
 
 
-test('to raw structure', () => {
-  let controller=createEnhance('Array')
+
+test('to raw array', () => {
+  let controller=createEnhance(Array)
   let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
@@ -110,13 +157,13 @@ test('to raw structure', () => {
 
 
 test('create Object', () => {
-  let controller=createEnhance('object')
+  let controller=createEnhance(Object)
   let cusObj=controller.createEntity()
   expect(Object.prototype.toString.call(cusObj)).toBe('[object Object]');
 });
 
 test('add custom method', () => {
-  let controller=createEnhance('object')
+  let controller=createEnhance(Object)
   let cusObj=controller.createEntity()
   cusObj.x=1
   cusObj.y=[1,2]
@@ -128,7 +175,7 @@ test('add custom method', () => {
 });
 
 test('remove specified method', () => {
-  let controller=createEnhance('object')
+  let controller=createEnhance(Object)
   let cusObj=controller.createEntity()
   cusObj.x=1
   cusObj.y=[1,2]
@@ -145,7 +192,7 @@ test('remove specified method', () => {
 });
 
 test('remove all', () => {
-  let controller=createEnhance('object')
+  let controller=createEnhance(Object)
   let cusObj=controller.createEntity()
   cusObj.x=1
   cusObj.y=[1,2]
@@ -164,8 +211,8 @@ test('remove all', () => {
   expect(cusObj.getFunctionKey).toBe(undefined);
 });
 
-test('to raw structure,is sallowCopy', () => {
-  let controller=createEnhance('object')
+test('to raw object,is sallowCopy', () => {
+  let controller=createEnhance(Object)
   let cusObj=controller.createEntity()
   cusObj.x=1
   cusObj.y=[1,2]
@@ -185,9 +232,19 @@ test('to raw structure,is sallowCopy', () => {
   expect(rawObj.getSize).toBe(undefined);
 });
 
+test('rawObj convert to enhance', () => {
+  let controller=createEnhance(Object)
+  let rawObj={x:1,y:2}
+  controller.addMethod('test1',function(){
+    return 1
+  })
+  let enhanceObj=controller.toEnhance(rawObj)
+  expect(enhanceObj.test1).not.toBe(undefined);
+});
+
 
 test('multi entity', () => {
-  let controller=createEnhance('object')
+  let controller=createEnhance(Object)
   let cusObj=controller.createEntity()
   let cusObj2=cusObj.constructor()
   cusObj.x=1
