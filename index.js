@@ -1,32 +1,32 @@
-function createBasicController(enhanceClass){
-  let CurClass
-  if(typeof enhanceClass==='string'){
-    switch(true){
-      case /[Ss]tring/.test(enhanceClass) :
-        CurClass=String
-        break;
-      case /[Nn]umber/.test(enhanceClass) :
-        CurClass=Number
-        break;
-    }
-  }
-  let enhancePrototype=Object.assign({},Object.getPrototypeOf(CurClass.prototype))
-  Object.setPrototypeOf(CurClass.prototype,enhancePrototype)
-  return {
-    addMethod:function(key,value){
-      // if(typeof value==='function')value=value.bind(null,this)
-      enhancePrototype[key]=value
-    },
-    removeMethod:function(key){
-      if(!key){
-        let originalProto=Object.getPrototypeOf(enhancePrototype)
-        enhancePrototype=Object.create(originalProto)
-        Object.setPrototypeOf( CurClass.prototype,enhancePrototype)
-      }
-      delete(enhancePrototype[key])
-    }
-  }
-}
+// function createBasicController(enhanceClass){
+//   let CurClass
+//   if(typeof enhanceClass==='string'){
+//     switch(true){
+//       case /[Ss]tring/.test(enhanceClass) :
+//         CurClass=String
+//         break;
+//       case /[Nn]umber/.test(enhanceClass) :
+//         CurClass=Number
+//         break;
+//     }
+//   }
+//   let enhancePrototype=Object.assign({},Object.getPrototypeOf(CurClass.prototype))
+//   Object.setPrototypeOf(CurClass.prototype,enhancePrototype)
+//   return {
+//     addMethod:function(key,value){
+//       // if(typeof value==='function')value=value.bind(null,this)
+//       enhancePrototype[key]=value
+//     },
+//     removeMethod:function(key){
+//       if(!key){
+//         let originalProto=Object.getPrototypeOf(enhancePrototype)
+//         enhancePrototype=Object.create(originalProto)
+//         Object.setPrototypeOf( CurClass.prototype,enhancePrototype)
+//       }
+//       delete(enhancePrototype[key])
+//     }
+//   }
+// }
 
 function createEnhance(enhanceClass){
 
@@ -52,7 +52,6 @@ function createEnhance(enhanceClass){
       }
     }
   })
-
   controller= {
     createEntity:function(){
       return Enhance.apply(null,arguments)
@@ -98,7 +97,24 @@ function createEnhance(enhanceClass){
     }
   }
 
+  function createEnhancePro(originClass){
+    
+    return{
+      addMethod:function (key,value) {
+        
+      },
+      removeMethod:function (key) {
+        
+      },
+      enhanceList:function () {
+        
+      }
+    }
+  
+  }
+
+
 module.exports={
-  createBasicController,
+  // createBasicController,
   createEnhance
 }
