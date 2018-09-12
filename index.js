@@ -6,11 +6,11 @@ function getFuncParamsName(func){
     str=func.toString()
     str='let x='+str
   }
-  // else if(typeof func==="string")str=func
   else throw new Error('func type error!')
   const astEsprima=esprima.parse(str)
   let node=astEsprima.body[0]
   let funcParams=[]
+  // 以js-test中顺序为准
 // 2
   if(node.type==="ExpressionStatement")node=node.expression
 // 5
@@ -30,44 +30,73 @@ function getFuncParamsName(func){
 }
 
 
-function createBasicController(enhanceClass){
-  let CurClass
-  if(typeof enhanceClass==='string'){
-    switch(true){
-      case /[Ss]tring/.test(enhanceClass) :
-        CurClass=String
-        break;
-      case /[Nn]umber/.test(enhanceClass) :
-        CurClass=Number
-        break;
-    }
-  }
-  let enhancePrototype=Object.create(Object.getPrototypeOf(CurClass.prototype))
-  Object.setPrototypeOf(CurClass.prototype,enhancePrototype)
-  return {
-    addMethod:function(key,value){
-      // if(typeof value==='function')value=value.bind(null,this)
-      enhancePrototype[key]=value
-    },
-    removeMethod:function(key){
-      if(!key){
-        let originalProto=Object.getPrototypeOf(enhancePrototype)
-        enhancePrototype=Object.create(originalProto)
-        Object.setPrototypeOf( CurClass.prototype,enhancePrototype)
+function createEnhanceProto(originalClass){
+  let controller
+  let initProto=Object.getPrototypeOf(originalClass.prototype)
+  let enhanceProto=Object.create(initProto)
+  Object.setPrototypeOf(originalClass.prototype,enhanceProto)
+
+  function addMethod(key,value){
+    enhanceProto[key]=function(){
+      if(typeof value!=='function') return value
+      // ast树找出参数名称[]
+      let params=getFuncParamsName(value)
+      if(params.includes('controller')){
+        return value.call(this,controller,...arguments)
+      }else{
+        return value.call(this,...arguments)
       }
-      delete(enhancePrototype[key])
+    }
+    return controller
+  }
+
+  function removeMethod(key){
+    if(!key){
+      let originalProto=Object.getPrototypeOf(enhanceProto)
+      enhanceProto=Object.create(originalProto)
+      Object.setPrototypeOf( originalClass.prototype,enhanceProto)
+    }
+    delete(enhanceProto[key])
+  }
+
+  function unMount() {
+    Object.setPrototypeOf( originalClass.prototype,initProto)
+    for(let k in controller){
+      if(k!=='retrieve')
+        delete(controller[k])
     }
   }
+
+
+  controller= {
+    addMethod:addMethod,
+    removeMethod:removeMethod,
+    unMount:unMount,
+    customMethodList:function(){
+      return enhanceProto
+    },
+    retrieve:function () {
+      controller.addMethod=addMethod
+      controller.removeMethod=removeMethod
+      controller.unMount=unMount
+      controller.customMethodList=function(){
+        return enhanceProto
+      }
+      Object.setPrototypeOf(originalClass.prototype,enhanceProto)
+      return controller
+    }
+  }
+  return controller
 }
 
-function createEnhance(enhanceClass){
+function createEnhance(originalClass){
 
   let controller
 
-  let enhanceProto=Object.create(enhanceClass.prototype);
+  let enhanceProto=Object.create(originalClass.prototype);
   let Enhance=function(){
 
-    let entity=enhanceClass.apply(enhanceClass,arguments)
+    let entity=originalClass.apply(originalClass,arguments)
 
     Object.setPrototypeOf(entity,enhanceProto)
 
@@ -80,7 +109,7 @@ function createEnhance(enhanceClass){
     },
     toRaw:{
       value:function () {
-        return  Object.setPrototypeOf(this,enhanceClass.prototype)
+        return  Object.setPrototypeOf(this,originalClass.prototype)
       }
     }
   })
@@ -99,23 +128,26 @@ function createEnhance(enhanceClass){
           return value.call(this,...arguments)
         }
       }
-      return this
+      return controller
     },
     removeMethod:function(key){
       if(!key){
         for(let k in enhanceProto){
           delete(enhanceProto[k])
         }
-        return this
+        return controller
       }
       delete(enhanceProto[key])
-      return this
+      return controller
+    },
+    customMethodList:function(){
+      return enhanceProto
     },
     toEnhance:function (structure) {
       return Object.setPrototypeOf(structure,enhanceProto)
     },
     toRaw:function toRaw(enhanceStructure) {
-      return  Object.setPrototypeOf(enhanceStructure,enhanceClass.prototype)
+      return  Object.setPrototypeOf(enhanceStructure,originalClass.prototype)
     }
   }
 
@@ -136,64 +168,10 @@ function createEnhance(enhanceClass){
     }
   }
 
-  function createEnhanceProto(originClass){
-    function createBasicController(enhanceClass){
-      let CurClass
-      if(typeof enhanceClass==='string'){
-        switch(true){
-          case /[Ss]tring/.test(enhanceClass) :
-            CurClass=String
-            break;
-          case /[Nn]umber/.test(enhanceClass) :
-            CurClass=Number
-            break;
-        }
-      }
-      let initProto=Object.getPrototypeOf(CurClass.prototype)
-      let enhancePrototype=Object.create(initProto)
-      Object.setPrototypeOf(CurClass.prototype,enhancePrototype)
-
-      function addMethod(key,value){
-        enhancePrototype[key]=value
-      }
-
-      function removeMethod(key){
-        if(!key){
-          let originalProto=Object.getPrototypeOf(enhancePrototype)
-          enhancePrototype=Object.create(originalProto)
-          Object.setPrototypeOf( CurClass.prototype,enhancePrototype)
-        }
-        delete(enhancePrototype[key])
-      }
-
-      function unMount() {
-        Object.setPrototypeOf( CurClass.prototype,initProto)
-        for(let k in this){
-          if(k!=='retrieve')
-            delete(this[k])
-        }
-      }
-      return {
-        addMethod:addMethod,
-        removeMethod:removeMethod,
-        enhanceList:function () {
-
-        },
-        unMount:unMount,
-        retrieve:function () {
-          this.addMethod=addMethod
-          this.removeMethod=removeMethod
-          this.unMount=unMount
-          Object.setPrototypeOf(CurClass.prototype,enhancePrototype)
-        }
-      }
-    }
-
-  }
 
 
 module.exports={
-  createBasicController,
+  createEnhanceProto,
   createEnhance,
   getFuncParamsName
 }
