@@ -9,7 +9,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "esprima": "^4.0.1"
+  },
   "devDependencies": {
     "jest": "^23.5.0",
     "rxjs": "^5.5.8"

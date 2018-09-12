@@ -1,32 +1,64 @@
-// function createBasicController(enhanceClass){
-//   let CurClass
-//   if(typeof enhanceClass==='string'){
-//     switch(true){
-//       case /[Ss]tring/.test(enhanceClass) :
-//         CurClass=String
-//         break;
-//       case /[Nn]umber/.test(enhanceClass) :
-//         CurClass=Number
-//         break;
-//     }
-//   }
-//   let enhancePrototype=Object.assign({},Object.getPrototypeOf(CurClass.prototype))
-//   Object.setPrototypeOf(CurClass.prototype,enhancePrototype)
-//   return {
-//     addMethod:function(key,value){
-//       // if(typeof value==='function')value=value.bind(null,this)
-//       enhancePrototype[key]=value
-//     },
-//     removeMethod:function(key){
-//       if(!key){
-//         let originalProto=Object.getPrototypeOf(enhancePrototype)
-//         enhancePrototype=Object.create(originalProto)
-//         Object.setPrototypeOf( CurClass.prototype,enhancePrototype)
-//       }
-//       delete(enhancePrototype[key])
-//     }
-//   }
-// }
+const esprima = require('esprima')
+
+function getFuncParamsName(func){
+  let str
+  if(typeof func==="function"){
+    str=func.toString()
+    str='let x='+str
+  }
+  // else if(typeof func==="string")str=func
+  else throw new Error('func type error!')
+  const astEsprima=esprima.parse(str)
+  let node=astEsprima.body[0]
+  let funcParams=[]
+// 2
+  if(node.type==="ExpressionStatement")node=node.expression
+// 5
+  if(node.type==="VariableDeclaration")node=node.declarations[0].init
+// 4
+  if(node.type==="AssignmentExpression")node=node.right
+// 6
+  if(node.type==="FunctionExpression")funcParams=node.params
+// 3
+  if(node.type==="ArrowFunctionExpression")funcParams=node.params
+// 1
+  if(node.type==="FunctionDeclaration")funcParams=node.params
+  return funcParams.map(o=>{
+    while(o.type!=='Identifier')o=o.left
+    return o.name
+  })
+}
+
+
+function createBasicController(enhanceClass){
+  let CurClass
+  if(typeof enhanceClass==='string'){
+    switch(true){
+      case /[Ss]tring/.test(enhanceClass) :
+        CurClass=String
+        break;
+      case /[Nn]umber/.test(enhanceClass) :
+        CurClass=Number
+        break;
+    }
+  }
+  let enhancePrototype=Object.create(Object.getPrototypeOf(CurClass.prototype))
+  Object.setPrototypeOf(CurClass.prototype,enhancePrototype)
+  return {
+    addMethod:function(key,value){
+      // if(typeof value==='function')value=value.bind(null,this)
+      enhancePrototype[key]=value
+    },
+    removeMethod:function(key){
+      if(!key){
+        let originalProto=Object.getPrototypeOf(enhancePrototype)
+        enhancePrototype=Object.create(originalProto)
+        Object.setPrototypeOf( CurClass.prototype,enhancePrototype)
+      }
+      delete(enhancePrototype[key])
+    }
+  }
+}
 
 function createEnhance(enhanceClass){
 
@@ -58,7 +90,14 @@ function createEnhance(enhanceClass){
     },
     addMethod:function(key,value){
       enhanceProto[key]=function(){
-        return value.call(this,controller,...arguments)
+        if(typeof value!=='function') return value
+        // ast树找出参数名称[]
+        let params=getFuncParamsName(value)
+        if(params.includes('controller')){
+          return value.call(this,controller,...arguments)
+        }else{
+          return value.call(this,...arguments)
+        }
       }
       return this
     },
@@ -97,24 +136,64 @@ function createEnhance(enhanceClass){
     }
   }
 
-  function createEnhancePro(originClass){
-    
-    return{
-      addMethod:function (key,value) {
-        
-      },
-      removeMethod:function (key) {
-        
-      },
-      enhanceList:function () {
-        
+  function createEnhanceProto(originClass){
+    function createBasicController(enhanceClass){
+      let CurClass
+      if(typeof enhanceClass==='string'){
+        switch(true){
+          case /[Ss]tring/.test(enhanceClass) :
+            CurClass=String
+            break;
+          case /[Nn]umber/.test(enhanceClass) :
+            CurClass=Number
+            break;
+        }
+      }
+      let initProto=Object.getPrototypeOf(CurClass.prototype)
+      let enhancePrototype=Object.create(initProto)
+      Object.setPrototypeOf(CurClass.prototype,enhancePrototype)
+
+      function addMethod(key,value){
+        enhancePrototype[key]=value
+      }
+
+      function removeMethod(key){
+        if(!key){
+          let originalProto=Object.getPrototypeOf(enhancePrototype)
+          enhancePrototype=Object.create(originalProto)
+          Object.setPrototypeOf( CurClass.prototype,enhancePrototype)
+        }
+        delete(enhancePrototype[key])
+      }
+
+      function unMount() {
+        Object.setPrototypeOf( CurClass.prototype,initProto)
+        for(let k in this){
+          if(k!=='retrieve')
+            delete(this[k])
+        }
+      }
+      return {
+        addMethod:addMethod,
+        removeMethod:removeMethod,
+        enhanceList:function () {
+
+        },
+        unMount:unMount,
+        retrieve:function () {
+          this.addMethod=addMethod
+          this.removeMethod=removeMethod
+          this.unMount=unMount
+          Object.setPrototypeOf(CurClass.prototype,enhancePrototype)
+        }
       }
     }
-  
+
   }
 
 
 module.exports={
-  // createBasicController,
-  createEnhance
+  createBasicController,
+  createEnhance,
+  getFuncParamsName
 }

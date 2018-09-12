@@ -79,9 +79,7 @@ test('to raw object,is sallowCopy', () => {
 test('rawObj convert to enhance', () => {
   let controller=createEnhance(Object)
   let rawObj={x:1,y:2}
-  controller.addMethod('test1',function(){
-    return 1
-  })
+  controller.addMethod('test1',a=>a)
   let enhanceObj=controller.toEnhance(rawObj)
   expect(enhanceObj.test1).not.toBe(undefined);
 });

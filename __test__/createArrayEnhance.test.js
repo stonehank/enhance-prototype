@@ -5,9 +5,9 @@ let extraMethod={
     let sliceArr=Array.prototype.slice.call(this,start,end)
     return controller.toEnhance(sliceArr)
   },
-  concat:function (controller) {
+  concat: (controller)=>{
     let args=[].slice.call(arguments,1)
-    let concatArr=Array.prototype.concat.apply(this,args)
+    let concatArr=Array.prototype.concat.call(this,...args)
     return controller.toEnhance(concatArr)
   }
 }
@@ -162,9 +162,7 @@ test('multi entity', () => {
   cusArr.push(1)
   cusArr.push(2)
   cusArr.push(3)
-  controller.addMethod('getFirst',function(){
-    return this[0]
-  })
+  controller.addMethod('getFirst',()=>this[0])
   controller.addMethod('getLast',function(){
     return this[this.length-1]
   })
