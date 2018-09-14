@@ -58,7 +58,13 @@ function createEnhanceProto(originalClass){
     }
     delete(enhanceProto[key])
   }
-
+  function addMethodBefore(originalName,extraFunc,context=originalClass){
+    let originalFunc=originalClass.prototype[originalName]
+    originalClass.prototype[originalName]= function(...args){
+      extraFunc.call(this)
+      originalFunc.call(this,...args)
+    }
+  }
   function unMount() {
     Object.setPrototypeOf( originalClass.prototype,initProto)
     for(let k in controller){
@@ -72,6 +78,7 @@ function createEnhanceProto(originalClass){
     addMethod:addMethod,
     removeMethod:removeMethod,
     unMount:unMount,
+    addMethodBefore:addMethodBefore,
     customMethodList:function(){
       return enhanceProto
     },
@@ -79,6 +86,7 @@ function createEnhanceProto(originalClass){
       controller.addMethod=addMethod
       controller.removeMethod=removeMethod
       controller.unMount=unMount
+      controller.addMethodBefore=addMethodBefore
       controller.customMethodList=function(){
         return enhanceProto
       }
@@ -96,7 +104,9 @@ function createEnhance(originalClass){
   let enhanceProto=Object.create(originalClass.prototype);
   let Enhance=function(){
 
-    let entity=originalClass.apply(originalClass,arguments)
+
+    let entity=new originalClass(...arguments)
+    // let entity=originalClass.apply(originalClass,arguments)
 
     Object.setPrototypeOf(entity,enhanceProto)
 
@@ -153,20 +163,6 @@ function createEnhance(originalClass){
 
   return controller
 }
-
-  function addMethodBefore(func,extraMethod,context=null){
-    return function(...args){
-      extraMethod()
-      func.call(context,...args)
-    }
-  }
-
-  function addMethodAfter(func,extraMethod,context=null){
-    return function(...args){
-      func.call(context,...args)
-      extraMethod()
-    }
-  }
 
 
 

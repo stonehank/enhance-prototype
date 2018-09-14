@@ -38,7 +38,14 @@ test('add unmount method', () => {
   expect(controller.addMethod).toBe(undefined)
 });
 
-
+test('custom method will not override original method', () => {
+  let controller=createEnhanceProto(String)
+  controller.addMethod('toLowerCase',function () {
+    return "custom toLowerCase"
+  })
+  let str='acd'
+  expect(str.toLowerCase()).toBe("acd")
+});
 
 test('remove specified method', () => {
   let controller=createEnhanceProto(String)
