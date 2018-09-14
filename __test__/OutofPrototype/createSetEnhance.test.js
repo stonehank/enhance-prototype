@@ -1,8 +1,8 @@
-const {createEnhance}=require('../index.js')
+const {createEnhanceOutofProto}=require('../../index.js')
 
 
 test('create Set', () => {
-  let controller=createEnhance(Set)
+  let controller=createEnhanceOutofProto(Set)
   let stringSet=controller.createEntity('firstValue')
   let arraySet=controller.createEntity([1,2,3,3,1])
   let emptyArr=controller.createEntity()
@@ -14,7 +14,7 @@ test('create Set', () => {
 
 
 test('add custom method', () => {
-  let controller=createEnhance(Set)
+  let controller=createEnhanceOutofProto(Set)
   let cusSet=controller.createEntity()
   cusSet.add(1)
   cusSet.add(2)
@@ -28,7 +28,7 @@ test('add custom method', () => {
 });
 
 test('remove single method', () => {
-  let controller=createEnhance(Set)
+  let controller=createEnhanceOutofProto(Set)
   let cusSet=controller.createEntity()
   cusSet.add(1)
   cusSet.add(2)
@@ -49,7 +49,7 @@ test('remove single method', () => {
 });
 
 test('remove all', () => {
-  let controller=createEnhance(Set)
+  let controller=createEnhanceOutofProto(Set)
   let cusSet=controller.createEntity()
   cusSet.add(1)
   cusSet.add(2)
@@ -66,7 +66,7 @@ test('remove all', () => {
 });
 
 test('rawSet convert to enhance', () => {
-  let controller=createEnhance(Set)
+  let controller=createEnhanceOutofProto(Set)
   let rawSet=new Set([1,2,3,4,5])
   controller.addMethod('getLast',function(){
     let lastV
@@ -78,7 +78,7 @@ test('rawSet convert to enhance', () => {
 });
 
 test('to raw set', () => {
-  let controller=createEnhance(Set)
+  let controller=createEnhanceOutofProto(Set)
   let cusSet=controller.createEntity([1,2,3,4,5])
   controller.addMethod('getFirst',function(){
     return 1
@@ -96,7 +96,7 @@ test('to raw set', () => {
 
 
 test('multi entity', () => {
-  let controller=createEnhance(Set)
+  let controller=createEnhanceOutofProto(Set)
   let cusSet=controller.createEntity([1,2,3,4,5])
   let cusSet2=cusSet.constructor()
   controller.addMethod('getFirst',function(){

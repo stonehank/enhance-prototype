@@ -1,7 +1,7 @@
-const {createEnhanceProto}=require('../index.js')
+const {createEnhanceInProto}=require('../../index.js')
 
 test('create string controller', () => {
-  let controller=createEnhanceProto(String)
+  let controller=createEnhanceInProto(String)
   expect(Object.prototype.toString.call(controller)).toBe('[object Object]')
   expect(typeof controller.addMethod).toBe('function')
   expect(typeof controller.removeMethod).toBe('function')
@@ -10,7 +10,7 @@ test('create string controller', () => {
 
 
 test('add method', () => {
-  let controller=createEnhanceProto(String)
+  let controller=createEnhanceInProto(String)
   controller.addMethod('frequence',function () {
     let c={},freq=[]
     for(let i=0;i<this.length;i++){
@@ -28,7 +28,7 @@ test('add method', () => {
 });
 
 test('add unmount method', () => {
-  let controller=createEnhanceProto(String)
+  let controller=createEnhanceInProto(String)
   controller.addMethod('doneAndUnmount',function (controller) {
     console.log('work done!')
     controller.unMount()
@@ -39,7 +39,7 @@ test('add unmount method', () => {
 });
 
 test('custom method will not override original method', () => {
-  let controller=createEnhanceProto(String)
+  let controller=createEnhanceInProto(String)
   controller.addMethod('toLowerCase',function () {
     return "custom toLowerCase"
   })
@@ -48,7 +48,7 @@ test('custom method will not override original method', () => {
 });
 
 test('remove specified method', () => {
-  let controller=createEnhanceProto(String)
+  let controller=createEnhanceInProto(String)
   controller.addMethod('test1',function () {
     console.log('test1')
   })
@@ -63,7 +63,7 @@ test('remove specified method', () => {
 });
 
 test('remove all method', () => {
-  let controller=createEnhanceProto(String)
+  let controller=createEnhanceInProto(String)
   controller.addMethod('test1',function () {
     console.log('test1')
   })
@@ -77,7 +77,7 @@ test('remove all method', () => {
 });
 
 test('controller unmount', () => {
-  let controller=createEnhanceProto(String)
+  let controller=createEnhanceInProto(String)
   controller.addMethod('test1',function () {
     console.log('test1')
   })
@@ -93,7 +93,7 @@ test('controller unmount', () => {
 
 
 test('controller retrieve', () => {
-  let controller=createEnhanceProto(String)
+  let controller=createEnhanceInProto(String)
   controller.addMethod('test1',function () {
     console.log('test1')
   })
@@ -112,7 +112,7 @@ test('controller retrieve', () => {
 
 
 test('create number controller', () => {
-  let controller=createEnhanceProto(Number)
+  let controller=createEnhanceInProto(Number)
   expect(Object.prototype.toString.call(controller)).toBe('[object Object]')
   expect(typeof controller.addMethod).toBe('function')
   expect(typeof controller.removeMethod).toBe('function')
@@ -121,7 +121,7 @@ test('create number controller', () => {
 
 
 test('add method', () => {
-  let controller=createEnhanceProto(Number)
+  let controller=createEnhanceInProto(Number)
   controller.addMethod('toBinary',function () {
     let num=this,mod,binary=''
     while(num>0){
@@ -147,7 +147,7 @@ test('add method', () => {
 
 
 test('remove specified method', () => {
-  let controller=createEnhanceProto(Number)
+  let controller=createEnhanceInProto(Number)
   controller.addMethod('test1',function () {
     console.log('test1')
   })
@@ -162,7 +162,7 @@ test('remove specified method', () => {
 });
 
 test('remove all method', () => {
-  let controller=createEnhanceProto(Number)
+  let controller=createEnhanceInProto(Number)
 
   controller.addMethod('test1',function () {
     console.log('test1')
@@ -178,7 +178,7 @@ test('remove all method', () => {
 
 
 test('controller unmount', () => {
-  let controller=createEnhanceProto(Number)
+  let controller=createEnhanceInProto(Number)
   controller.addMethod('test1',function () {
     console.log('test1')
   })
@@ -194,7 +194,7 @@ test('controller unmount', () => {
 
 
 test('controller retrieve', () => {
-  let controller=createEnhanceProto(Number)
+  let controller=createEnhanceInProto(Number)
   controller.addMethod('test1',function () {
     console.log('test1')
   })

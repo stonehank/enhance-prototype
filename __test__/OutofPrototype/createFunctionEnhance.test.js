@@ -1,8 +1,8 @@
-const {createEnhance}=require('../index.js')
+const {createEnhanceOutofProto}=require('../../index.js')
 
 
 test('create Function', () => {
-  let controller=createEnhance(Function)
+  let controller=createEnhanceOutofProto(Function)
   let addSum=controller.createEntity('a','b','return a+b')
   let oneParams=controller.createEntity('x','')
   expect(addSum.length).toBe(2);
@@ -13,7 +13,7 @@ test('create Function', () => {
 
 
 test('add custom method', () => {
-  let controller=createEnhance(Function)
+  let controller=createEnhanceOutofProto(Function)
   let cusFunc=controller.createEntity()
   controller.addMethod('test1',function(){
     return 'test1'
@@ -22,7 +22,7 @@ test('add custom method', () => {
 });
 
 test('remove single method', () => {
-  let controller=createEnhance(Function)
+  let controller=createEnhanceOutofProto(Function)
   let cusFunc=controller.createEntity()
 
   controller.addMethod('test1',function(){
@@ -38,7 +38,7 @@ test('remove single method', () => {
 
 
 test('remove all', () => {
-  let controller=createEnhance(Function)
+  let controller=createEnhanceOutofProto(Function)
   let cusFunc=controller.createEntity()
 
   controller.addMethod('test1',function(){
@@ -54,7 +54,7 @@ test('remove all', () => {
 
 
 test('raw convert to enhance', () => {
-  let controller=createEnhance(Function)
+  let controller=createEnhanceOutofProto(Function)
   let raw=function(){
     return 'raw'
   }
@@ -68,7 +68,7 @@ test('raw convert to enhance', () => {
 
 
 test('enhance convert to raw ', () => {
-  let controller=createEnhance(Function)
+  let controller=createEnhanceOutofProto(Function)
   let cus=controller.createEntity()
   controller.addMethod('test1',function(){
     return 'test1'
@@ -85,7 +85,7 @@ test('enhance convert to raw ', () => {
 
 
 test('multi entity', () => {
-  let controller=createEnhance(Function)
+  let controller=createEnhanceOutofProto(Function)
   let cusFunc=controller.createEntity()
   let cusFunc2=cusFunc.constructor()
   controller.addMethod('test1',function(){

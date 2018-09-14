@@ -1,4 +1,4 @@
-const {createEnhance}=require('../index.js')
+const {createEnhanceOutofProto}=require('../../index.js')
 
 let extraMethod={
   slice:function (controller,start=0,end) {
@@ -14,7 +14,7 @@ let extraMethod={
 
 
 test('create Array', () => {
-  let controller=createEnhance(Array)
+  let controller=createEnhanceOutofProto(Array)
   let stringArr=controller.createEntity('firstValue')
   let undefinedArr=controller.createEntity(undefined)
   let nullArr=controller.createEntity(null)
@@ -31,7 +31,7 @@ test('create Array', () => {
 
 
 test('add custom method', () => {
-  let controller=createEnhance(Array)
+  let controller=createEnhanceOutofProto(Array)
   let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
@@ -43,7 +43,7 @@ test('add custom method', () => {
 });
 
 test('remove single method', () => {
-  let controller=createEnhance(Array)
+  let controller=createEnhanceOutofProto(Array)
   let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
@@ -60,7 +60,7 @@ test('remove single method', () => {
 });
 
 test('remove all', () => {
-  let controller=createEnhance(Array)
+  let controller=createEnhanceOutofProto(Array)
   let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
@@ -77,7 +77,7 @@ test('remove all', () => {
 });
 
 test('rawArr convert to enhance', () => {
-  let controller=createEnhance(Array)
+  let controller=createEnhanceOutofProto(Array)
   let rawArr=[1,2,3,4,5]
   controller.addMethod('getLast',function(){
     return this[this.length-1]
@@ -88,7 +88,7 @@ test('rawArr convert to enhance', () => {
 
 
 test('add custom slice, should not convert to raw', () => {
-  let controller=createEnhance(Array)
+  let controller=createEnhanceOutofProto(Array)
   controller.addMethod('slice',extraMethod.slice)
   let cusArr=controller.createEntity()
   cusArr.push(1)
@@ -110,7 +110,7 @@ test('add custom slice, should not convert to raw', () => {
 });
 
 test('add custom concat, should not convert to raw', () => {
-  let controller=createEnhance(Array)
+  let controller=createEnhanceOutofProto(Array)
   controller.addMethod('concat',extraMethod.concat)
   let cusArr=controller.createEntity()
   cusArr.push(1)
@@ -135,7 +135,7 @@ test('add custom concat, should not convert to raw', () => {
 
 
 test('to raw array', () => {
-  let controller=createEnhance(Array)
+  let controller=createEnhanceOutofProto(Array)
   let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
@@ -156,7 +156,7 @@ test('to raw array', () => {
 
 
 test('multi entity', () => {
-  let controller=createEnhance(Array)
+  let controller=createEnhanceOutofProto(Array)
   let cusArr=controller.createEntity()
   let cusArr2=cusArr.constructor()
   cusArr.push(1)

@@ -1,13 +1,13 @@
-const {createEnhance}=require('../index.js')
+const {createEnhanceOutofProto}=require('../../index.js')
 
 test('create Object', () => {
-  let controller=createEnhance(Object)
+  let controller=createEnhanceOutofProto(Object)
   let cusObj=controller.createEntity()
   expect(Object.prototype.toString.call(cusObj)).toBe('[object Object]');
 });
 
 test('add custom method', () => {
-  let controller=createEnhance(Object)
+  let controller=createEnhanceOutofProto(Object)
   let cusObj=controller.createEntity()
   cusObj.x=1
   cusObj.y=[1,2]
@@ -19,7 +19,7 @@ test('add custom method', () => {
 });
 
 test('remove specified method', () => {
-  let controller=createEnhance(Object)
+  let controller=createEnhanceOutofProto(Object)
   let cusObj=controller.createEntity()
   cusObj.x=1
   cusObj.y=[1,2]
@@ -36,7 +36,7 @@ test('remove specified method', () => {
 });
 
 test('remove all', () => {
-  let controller=createEnhance(Object)
+  let controller=createEnhanceOutofProto(Object)
   let cusObj=controller.createEntity()
   cusObj.x=1
   cusObj.y=[1,2]
@@ -56,7 +56,7 @@ test('remove all', () => {
 });
 
 test('to raw object,is sallowCopy', () => {
-  let controller=createEnhance(Object)
+  let controller=createEnhanceOutofProto(Object)
   let cusObj=controller.createEntity()
   cusObj.x=1
   cusObj.y=[1,2]
@@ -77,7 +77,7 @@ test('to raw object,is sallowCopy', () => {
 });
 
 test('rawObj convert to enhance', () => {
-  let controller=createEnhance(Object)
+  let controller=createEnhanceOutofProto(Object)
   let rawObj={x:1,y:2}
   controller.addMethod('test1',a=>a)
   let enhanceObj=controller.toEnhance(rawObj)
@@ -86,7 +86,7 @@ test('rawObj convert to enhance', () => {
 
 
 test('multi entity', () => {
-  let controller=createEnhance(Object)
+  let controller=createEnhanceOutofProto(Object)
   let cusObj=controller.createEntity()
   let cusObj2=cusObj.constructor()
   cusObj.x=1

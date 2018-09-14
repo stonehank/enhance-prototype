@@ -30,7 +30,7 @@ function getFuncParamsName(func){
 }
 
 
-function createEnhanceProto(originalClass){
+function createEnhanceInProto(originalClass){
   let controller
   let initProto=Object.getPrototypeOf(originalClass.prototype)
   let enhanceProto=Object.create(initProto)
@@ -58,11 +58,18 @@ function createEnhanceProto(originalClass){
     }
     delete(enhanceProto[key])
   }
-  function addMethodBefore(originalName,extraFunc,context=originalClass){
+  function addMethodBefore(originalName,extraFunc,context){
     let originalFunc=originalClass.prototype[originalName]
     originalClass.prototype[originalName]= function(...args){
-      extraFunc.call(this)
+      extraFunc.call(context||this,...args)
       originalFunc.call(this,...args)
+    }
+  }
+  function addMethodAfter(originalName,extraFunc,context=originalClass){
+    let originalFunc=originalClass.prototype[originalName]
+    originalClass.prototype[originalName]= function(...args){
+      originalFunc.call(this,...args)
+      extraFunc.call(context || this)
     }
   }
   function unMount() {
@@ -72,13 +79,12 @@ function createEnhanceProto(originalClass){
         delete(controller[k])
     }
   }
-
-
   controller= {
     addMethod:addMethod,
     removeMethod:removeMethod,
     unMount:unMount,
-    addMethodBefore:addMethodBefore,
+    addMethodBefore,
+    addMethodAfter,
     customMethodList:function(){
       return enhanceProto
     },
@@ -97,16 +103,14 @@ function createEnhanceProto(originalClass){
   return controller
 }
 
-function createEnhance(originalClass){
+function createEnhanceOutofProto(originalClass){
 
   let controller
 
   let enhanceProto=Object.create(originalClass.prototype);
   let Enhance=function(){
 
-
     let entity=new originalClass(...arguments)
-    // let entity=originalClass.apply(originalClass,arguments)
 
     Object.setPrototypeOf(entity,enhanceProto)
 
@@ -167,7 +171,7 @@ function createEnhance(originalClass){
 
 
 module.exports={
-  createEnhanceProto,
-  createEnhance,
+  createEnhanceInProto,
+  createEnhanceOutofProto,
   getFuncParamsName
 }

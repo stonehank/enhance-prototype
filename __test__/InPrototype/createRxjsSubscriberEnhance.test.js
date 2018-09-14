@@ -1,5 +1,5 @@
-const Rx=require('../node_modules/rxjs/Rx.js')
-const {createEnhanceProto}=require('../index.js')
+const Rx=require('../../node_modules/rxjs/Rx.js')
+const {createEnhanceInProto}=require('../../index.js')
 const Subscriber=Rx.Subscriber
 
 
@@ -7,7 +7,7 @@ const Subscriber=Rx.Subscriber
 
 
 test('create Subscriber', () => {
-  let controller=createEnhanceProto(Subscriber)
+  let controller=createEnhanceInProto(Subscriber)
   controller.addMethodBefore('complete',function(){
     this.status="completed"
   })
