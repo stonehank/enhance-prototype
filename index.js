@@ -37,8 +37,8 @@ function createEnhanceInProto(originalClass){
   Object.setPrototypeOf(originalClass.prototype,enhanceProto)
 
   function addMethod(key,value){
-    enhanceProto[key]=function(){
-      if(typeof value!=='function') return value
+    if(typeof value!=='function')  enhanceProto[key]=value
+    else enhanceProto[key]=function(){
       // ast树找出参数名称[]
       let params=getFuncParamsName(value)
       if(params.includes('controller')){
@@ -132,8 +132,8 @@ function createEnhanceOutofProto(originalClass){
       return Enhance.apply(null,arguments)
     },
     addMethod:function(key,value){
-      enhanceProto[key]=function(){
-        if(typeof value!=='function') return value
+      if(typeof value!=='function')  enhanceProto[key]=value
+      else enhanceProto[key]=function(){
         // ast树找出参数名称[]
         let params=getFuncParamsName(value)
         if(params.includes('controller')){

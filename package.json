@@ -1,13 +1,13 @@
 {
-  "name": "enhance",
+  "name": "enhance-prototype",
   "version": "1.0.0",
-  "description": "",
-  "main": "enhanceClass.js",
+  "description": "Enhance the prototype of Class.",
+  "main": "index.js",
   "scripts": {
     "test": "jest"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["prototype","class","enhance"],
+  "author": "stonehank",
   "license": "ISC",
   "dependencies": {
     "esprima": "^4.0.1"

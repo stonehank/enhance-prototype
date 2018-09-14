@@ -179,3 +179,18 @@ test('multi entity', () => {
   expect(cusArr2.getLast).toBe(undefined);
   expect(cusArr3.getLast).toBe(undefined);
 });
+
+
+test('add property', () => {
+  let controller=createEnhanceOutofProto(Array)
+  let curArr=controller.createEntity()
+  controller.addMethod('specialString','string')
+  controller.addMethod('specialArray',[1,2,3])
+  controller.addMethod('specialObject',{value:true})
+  controller.addMethod('specialNumber',54)
+  let arr=[1,2,3]
+  expect(curArr.specialString).toBe("string")
+  expect(curArr.specialArray).toEqual([1,2,3])
+  expect(curArr.specialObject).toEqual({value:true})
+  expect(curArr.specialNumber).toBe(54)
+});

@@ -39,4 +39,18 @@ test('add method after', () => {
 });
 
 
+test('add property', () => {
+  let controller=createEnhanceInProto(Array)
+  controller.addMethod('specialString','string')
+  controller.addMethod('specialArray',[1,2,3])
+  controller.addMethod('specialObject',{value:true})
+  controller.addMethod('specialNumber',54)
+  let arr=[1,2,3]
+  expect(arr.specialString).toBe("string")
+  expect(arr.specialArray).toEqual([1,2,3])
+  expect(arr.specialObject).toEqual({value:true})
+  expect(arr.specialNumber).toBe(54)
+  controller.unMount()
+});
+
 
