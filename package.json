@@ -6,13 +6,27 @@
   "scripts": {
     "test": "jest"
   },
-  "keywords": ["prototype","class","enhance"],
-  "author": "stonehank",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "www.xxx.com"
+  },
+  "keywords": [
+    "prototype",
+    "class",
+    "enhance"
+  ],
+  "author": "stonehank<stonehank310@gmail.com>",
+  "license": "MIT",
   "dependencies": {
-    "esprima": "^4.0.1"
+    "eslint": "^5.6.0",
+    "eslint-plugin-jest": "^21.22.0",
+    "esprima": "^4.0.1",
+    "function-arguments": "^1.0.8",
+    "get-function-args-x": "^2.1.0",
+    "get-function-params": "^2.0.6"
   },
   "devDependencies": {
+    "@types/jest": "^23.3.2",
     "jest": "^23.5.0",
     "rxjs": "^5.5.8"
   }

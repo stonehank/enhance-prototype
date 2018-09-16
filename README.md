@@ -71,3 +71,13 @@
     可涵盖任意函数写法。
 
 
+### 例子
+
+```js
+var {createEnhanceInProto} = require("enhance-prototype")
+let ctrl=createEnhanceInProto(Array)
+ctrl.addMethod('sum',()=>{})
+
+let arr=[1,2]
+arr.sum()
+```

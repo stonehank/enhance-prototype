@@ -1,34 +1,4 @@
-const esprima = require('esprima')
-
-function getFuncParamsName(func){
-  let str
-  if(typeof func==="function"){
-    str=func.toString()
-    str='let x='+str
-  }
-  else throw new Error('func type error!')
-  const astEsprima=esprima.parse(str)
-  let node=astEsprima.body[0]
-  let funcParams=[]
-  // 以js-test中顺序为准
-// 2
-  if(node.type==="ExpressionStatement")node=node.expression
-// 5
-  if(node.type==="VariableDeclaration")node=node.declarations[0].init
-// 4
-  if(node.type==="AssignmentExpression")node=node.right
-// 6
-  if(node.type==="FunctionExpression")funcParams=node.params
-// 3
-  if(node.type==="ArrowFunctionExpression")funcParams=node.params
-// 1
-  if(node.type==="FunctionDeclaration")funcParams=node.params
-  return funcParams.map(o=>{
-    while(o.type!=='Identifier')o=o.left
-    return o.name
-  })
-}
-
+const checkIfNeedController=require("./checkIfNeedController")
 
 function createEnhanceInProto(originalClass){
   let controller
@@ -39,12 +9,23 @@ function createEnhanceInProto(originalClass){
   function addMethod(key,value){
     if(typeof value!=='function')  enhanceProto[key]=value
     else enhanceProto[key]=function(){
-      // ast树找出参数名称[]
-      let params=getFuncParamsName(value)
-      if(params.includes('controller')){
-        return value.call(this,controller,...arguments)
+      if(checkIfNeedController(value)){
+        // if addMethod('xx',class{...})
+        try{
+          return value.call(this,controller,...arguments)
+        }catch(e){
+          if(e.message.includes("invoked without 'new'"))
+            value=value.bind(this,controller,...arguments)
+          return new value
+        }
       }else{
-        return value.call(this,...arguments)
+        try{
+          return value.call(this,...arguments)
+        }catch(e){
+          if(e.message.includes("invoked without 'new'"))
+            value=value.bind(this,...arguments)
+          return new value
+        }
       }
     }
     return controller
@@ -134,12 +115,23 @@ function createEnhanceOutofProto(originalClass){
     addMethod:function(key,value){
       if(typeof value!=='function')  enhanceProto[key]=value
       else enhanceProto[key]=function(){
-        // ast树找出参数名称[]
-        let params=getFuncParamsName(value)
-        if(params.includes('controller')){
-          return value.call(this,controller,...arguments)
+        if(checkIfNeedController(value)){
+          // if addMethod('xx',class{...})
+          try{
+            return value.call(this,controller,...arguments)
+          }catch(e){
+            if(e.message.includes("invoked without 'new'"))
+              value=value.bind(this,controller,...arguments)
+            return new value
+          }
         }else{
-          return value.call(this,...arguments)
+          try{
+            return value.call(this,...arguments)
+          }catch(e){
+            if(e.message.includes("invoked without 'new'"))
+              value=value.bind(this,...arguments)
+            return new value
+          }
         }
       }
       return controller
@@ -173,5 +165,4 @@ function createEnhanceOutofProto(originalClass){
 module.exports={
   createEnhanceInProto,
   createEnhanceOutofProto,
-  getFuncParamsName
 }
