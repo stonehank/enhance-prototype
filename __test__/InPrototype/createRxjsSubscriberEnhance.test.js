@@ -8,7 +8,7 @@ const Subscriber=Rx.Subscriber
 
 test('create Subscriber', () => {
   let controller=createEnhanceInProto(Subscriber)
-  controller.addMethodBefore('complete',function(){
+  controller.addBefore('complete',function(){
     this.status="completed"
   })
 

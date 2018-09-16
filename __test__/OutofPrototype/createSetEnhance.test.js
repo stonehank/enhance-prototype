@@ -19,7 +19,7 @@ test('add custom method', () => {
   cusSet.add(1)
   cusSet.add(2)
   cusSet.add(3)
-  controller.addMethod('getFirst',function(){
+  controller.addProp('getFirst',function(){
     for(let v of this){
       return v
     }
@@ -33,17 +33,17 @@ test('remove single method', () => {
   cusSet.add(1)
   cusSet.add(2)
   cusSet.add(3)
-  controller.addMethod('getFirst',function(){
+  controller.addProp('getFirst',function(){
     for(let v of this){
       return v
     }
   })
-  controller.addMethod('getLast',function(){
+  controller.addProp('getLast',function(){
     let lastV
     for(let v of this)lastV=v
     return lastV
   })
-  controller.removeMethod('getFirst')
+  controller.removeProp('getFirst')
   expect(cusSet.getFirst).toBe(undefined);
   expect(cusSet.getLast()).toBe(3);
 });
@@ -54,13 +54,13 @@ test('remove all', () => {
   cusSet.add(1)
   cusSet.add(2)
   cusSet.add(3)
-  controller.addMethod('getFirst',function(){
+  controller.addProp('getFirst',function(){
     return 1
   })
-  controller.addMethod('getLast',function(){
+  controller.addProp('getLast',function(){
     return 3
   })
-  controller.removeMethod()
+  controller.removeProp()
   expect(cusSet.getFirst).toBe(undefined);
   expect(cusSet.getLast).toBe(undefined);
 });
@@ -68,7 +68,7 @@ test('remove all', () => {
 test('rawSet convert to enhance', () => {
   let controller=createEnhanceOutofProto(Set)
   let rawSet=new Set([1,2,3,4,5])
-  controller.addMethod('getLast',function(){
+  controller.addProp('getLast',function(){
     let lastV
     for(let v of this)lastV=v
     return lastV
@@ -80,16 +80,16 @@ test('rawSet convert to enhance', () => {
 test('to raw set', () => {
   let controller=createEnhanceOutofProto(Set)
   let cusSet=controller.createEntity([1,2,3,4,5])
-  controller.addMethod('getFirst',function(){
+  controller.addProp('getFirst',function(){
     return 1
   })
-  controller.addMethod('getLast',function(){
+  controller.addProp('getLast',function(){
     return 5
   })
   let rawSet=cusSet.toRaw()
   expect(rawSet.size).toBe(5);
   expect(rawSet.has(2)).toBe(true);
-  expect(rawSet.addMethod).toBe(undefined);
+  expect(rawSet.addProp).toBe(undefined);
   expect(rawSet.getFirst).toBe(undefined);
   expect(rawSet.getLast).toBe(undefined);
 });
@@ -99,17 +99,17 @@ test('multi entity', () => {
   let controller=createEnhanceOutofProto(Set)
   let cusSet=controller.createEntity([1,2,3,4,5])
   let cusSet2=cusSet.constructor()
-  controller.addMethod('getFirst',function(){
+  controller.addProp('getFirst',function(){
     return 1
   })
-  controller.addMethod('getLast',function(){
+  controller.addProp('getLast',function(){
     return 5
   })
   let cusSet3=cusSet2.constructor()
   expect(typeof cusSet2.getFirst).toBe('function');
   expect(typeof cusSet2.getLast).toBe('function');
   expect(typeof cusSet3.getLast).toBe('function');
-  controller.removeMethod()
+  controller.removeProp()
   expect(cusSet.getFirst).toBe(undefined);
   expect(cusSet.getLast).toBe(undefined);
   expect(cusSet2.getFirst).toBe(undefined);

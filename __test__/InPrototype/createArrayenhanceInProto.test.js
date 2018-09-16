@@ -3,11 +3,11 @@ const {createEnhanceInProto}=require('../../index.js')
 test('create Array controller', () => {
   let controller=createEnhanceInProto(Array)
   expect(Object.prototype.toString.call(controller)).toBe('[object Object]')
-  expect(typeof controller.addMethod).toBe('function')
-  expect(typeof controller.removeMethod).toBe('function')
+  expect(typeof controller.addProp).toBe('function')
+  expect(typeof controller.removeProp).toBe('function')
   expect(typeof controller.unMount).toBe('function')
-  expect(typeof controller.addMethodBefore).toBe('function')
-  expect(typeof controller.addMethodAfter).toBe('function')
+  expect(typeof controller.addBefore).toBe('function')
+  expect(typeof controller.addAfter).toBe('function')
   expect(typeof controller.customMethodList).toBe('function')
   // controller.unMount()
 });
@@ -15,7 +15,7 @@ test('create Array controller', () => {
 test('add method before', () => {
   let controller=createEnhanceInProto(Array)
   let aux=[]
-  controller.addMethodBefore('push',function () {
+  controller.addBefore('push',function () {
     for(let i=0;i<arguments.length;i++){
       this[i]=arguments[i]
     }
@@ -29,7 +29,7 @@ test('add method before', () => {
 test('add method after', () => {
   let controller=createEnhanceInProto(Array)
   let aux=[]
-  controller.addMethodBefore('push',function () {
+  controller.addBefore('push',function () {
       aux=this
   })
   let arr=[1,2,3]
@@ -41,10 +41,10 @@ test('add method after', () => {
 
 test('add property', () => {
   let controller=createEnhanceInProto(Array)
-  controller.addMethod('specialString','string')
-  controller.addMethod('specialArray',[1,2,3])
-  controller.addMethod('specialObject',{value:true})
-  controller.addMethod('specialNumber',54)
+  controller.addProp('specialString','string')
+  controller.addProp('specialArray',[1,2,3])
+  controller.addProp('specialObject',{value:true})
+  controller.addProp('specialNumber',54)
   let arr=[1,2,3]
   expect(arr.specialString).toBe("string")
   expect(arr.specialArray).toEqual([1,2,3])

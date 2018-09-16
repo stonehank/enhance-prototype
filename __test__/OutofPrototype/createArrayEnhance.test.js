@@ -36,7 +36,7 @@ test('add custom method', () => {
   cusArr.push(1)
   cusArr.push(2)
   cusArr.push(3)
-  controller.addProperty('getFirst',function(){
+  controller.addProp('getFirst',function(){
     return this[0]
   })
   expect(cusArr.getFirst()).toBe(1);
@@ -48,13 +48,13 @@ test('remove single method', () => {
   cusArr.push(1)
   cusArr.push(2)
   cusArr.push(3)
-  controller.addProperty('getFirst',function(){
+  controller.addProp('getFirst',function(){
     return this[0]
   })
-  controller.addProperty('getLast',function(){
+  controller.addProp('getLast',function(){
     return this[this.length-1]
   })
-  controller.removeMethod('getFirst')
+  controller.removeProp('getFirst')
   expect(cusArr.getFirst).toBe(undefined);
   expect(cusArr.getLast()).toBe(3);
 });
@@ -65,13 +65,13 @@ test('remove all', () => {
   cusArr.push(1)
   cusArr.push(2)
   cusArr.push(3)
-  controller.addProperty('getFirst',function(){
+  controller.addProp('getFirst',function(){
     return this[0]
   })
-  controller.addProperty('getLast',function(){
+  controller.addProp('getLast',function(){
     return this[this.length-1]
   })
-  controller.removeMethod()
+  controller.removeProp()
   expect(cusArr.getFirst).toBe(undefined);
   expect(cusArr.getLast).toBe(undefined);
 });
@@ -79,7 +79,7 @@ test('remove all', () => {
 test('rawArr convert to enhance', () => {
   let controller=createEnhanceOutofProto(Array)
   let rawArr=[1,2,3,4,5]
-  controller.addProperty('getLast',function(){
+  controller.addProp('getLast',function(){
     return this[this.length-1]
   })
   let enhanceArr=controller.toEnhance(rawArr)
@@ -89,7 +89,7 @@ test('rawArr convert to enhance', () => {
 
 test('add custom slice, should not convert to raw', () => {
   let controller=createEnhanceOutofProto(Array)
-  controller.addProperty('slice',extraMethod.slice)
+  controller.addProp('slice',extraMethod.slice)
   let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
@@ -97,10 +97,10 @@ test('add custom slice, should not convert to raw', () => {
   cusArr.push(4)
   cusArr.push(5)
   cusArr.push(6)
-  controller.addProperty('getFirst',function(){
+  controller.addProp('getFirst',function(){
     return this[0]
   })
-  controller.addProperty('getLast',function(){
+  controller.addProp('getLast',function(){
     return this[this.length-1]
   })
   let xArr=cusArr.slice(2,4)
@@ -111,7 +111,7 @@ test('add custom slice, should not convert to raw', () => {
 
 test('add custom concat, should not convert to raw', () => {
   let controller=createEnhanceOutofProto(Array)
-  controller.addProperty('concat',extraMethod.concat)
+  controller.addProp('concat',extraMethod.concat)
   let cusArr=controller.createEntity()
   cusArr.push(1)
   cusArr.push(2)
@@ -119,10 +119,10 @@ test('add custom concat, should not convert to raw', () => {
   cusArr.push(4)
   cusArr.push(5)
   cusArr.push(6)
-  controller.addProperty('getFirst',function(){
+  controller.addProp('getFirst',function(){
     return this[0]
   })
-  controller.addProperty('getLast',function(){
+  controller.addProp('getLast',function(){
     return this[this.length-1]
   })
   let xArr=cusArr.concat([7,8],[9,10])
@@ -140,16 +140,16 @@ test('to raw array', () => {
   cusArr.push(1)
   cusArr.push(2)
   cusArr.push(3)
-  controller.addProperty('getFirst',function(){
+  controller.addProp('getFirst',function(){
     return this[0]
   })
-  controller.addProperty('getLast',function(){
+  controller.addProp('getLast',function(){
     return this[this.length-1]
   })
   let rawArr=cusArr.toRaw()
   expect(rawArr.length).toBe(3);
   expect(rawArr[1]).toBe(2);
-  expect(rawArr.addProperty).toBe(undefined);
+  expect(rawArr.addProp).toBe(undefined);
   expect(rawArr.getFirst).toBe(undefined);
   expect(rawArr.getLast).toBe(undefined);
 });
@@ -162,17 +162,17 @@ test('multi entity', () => {
   cusArr.push(1)
   cusArr.push(2)
   cusArr.push(3)
-  controller.addProperty('getFirst',function(){
+  controller.addProp('getFirst',function(){
     return this[0]
   })
-  controller.addProperty('getLast',function(){
+  controller.addProp('getLast',function(){
     return this[this.length-1]
   })
   let cusArr3=cusArr2.constructor()
   expect(typeof cusArr2.getFirst).toBe('function');
   expect(typeof cusArr2.getLast).toBe('function');
   expect(typeof cusArr3.getLast).toBe('function');
-  controller.removeMethod()
+  controller.removeProp()
   expect(cusArr.getFirst).toBe(undefined);
   expect(cusArr.getLast).toBe(undefined);
   expect(cusArr2.getFirst).toBe(undefined);
@@ -184,10 +184,10 @@ test('multi entity', () => {
 test('add property', () => {
   let controller=createEnhanceOutofProto(Array)
   let curArr=controller.createEntity()
-  controller.addProperty('specialString','string')
-  controller.addProperty('specialArray',[1,2,3])
-  controller.addProperty('specialObject',{value:true})
-  controller.addProperty('specialNumber',54)
+  controller.addProp('specialString','string')
+  controller.addProp('specialArray',[1,2,3])
+  controller.addProp('specialObject',{value:true})
+  controller.addProp('specialNumber',54)
   let arr=[1,2,3]
   expect(curArr.specialString).toBe("string")
   expect(curArr.specialArray).toEqual([1,2,3])

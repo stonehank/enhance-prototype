@@ -15,7 +15,7 @@ test('create Function', () => {
 test('add custom method', () => {
   let controller=createEnhanceOutofProto(Function)
   let cusFunc=controller.createEntity()
-  controller.addMethod('test1',function(){
+  controller.addProp('test1',function(){
     return 'test1'
   })
   expect(cusFunc.test1()).toBe('test1');
@@ -25,13 +25,13 @@ test('remove single method', () => {
   let controller=createEnhanceOutofProto(Function)
   let cusFunc=controller.createEntity()
 
-  controller.addMethod('test1',function(){
+  controller.addProp('test1',function(){
     return 'test1'
   })
-  controller.addMethod('test2',function(){
+  controller.addProp('test2',function(){
     return 'test2'
   })
-  controller.removeMethod('test1')
+  controller.removeProp('test1')
   expect(cusFunc.test1).toBe(undefined);
   expect(cusFunc.test2()).toBe('test2');
 });
@@ -41,13 +41,13 @@ test('remove all', () => {
   let controller=createEnhanceOutofProto(Function)
   let cusFunc=controller.createEntity()
 
-  controller.addMethod('test1',function(){
+  controller.addProp('test1',function(){
     return 'test1'
   })
-  controller.addMethod('test2',function(){
+  controller.addProp('test2',function(){
     return 'test2'
   })
-  controller.removeMethod()
+  controller.removeProp()
   expect(cusFunc.test1).toBe(undefined);
   expect(cusFunc.test2).toBe(undefined);
 });
@@ -58,7 +58,7 @@ test('raw convert to enhance', () => {
   let raw=function(){
     return 'raw'
   }
-  controller.addMethod('test1',function(){
+  controller.addProp('test1',function(){
     return 'test1'
   })
   let enhance=controller.toEnhance(raw)
@@ -70,15 +70,15 @@ test('raw convert to enhance', () => {
 test('enhance convert to raw ', () => {
   let controller=createEnhanceOutofProto(Function)
   let cus=controller.createEntity()
-  controller.addMethod('test1',function(){
+  controller.addProp('test1',function(){
     return 'test1'
   })
-  controller.addMethod('test2',function(){
+  controller.addProp('test2',function(){
     return 'test2'
   })
   let raw=cus.toRaw()
 
-  expect(raw.addMethod).toBe(undefined);
+  expect(raw.addProp).toBe(undefined);
   expect(raw.test1).toBe(undefined);
   expect(raw.test2).toBe(undefined);
 });
@@ -88,17 +88,17 @@ test('multi entity', () => {
   let controller=createEnhanceOutofProto(Function)
   let cusFunc=controller.createEntity()
   let cusFunc2=cusFunc.constructor()
-  controller.addMethod('test1',function(){
+  controller.addProp('test1',function(){
     return 'test1'
   })
-  controller.addMethod('test2',function(){
+  controller.addProp('test2',function(){
     return 'test2'
   })
   let cusFunc3=cusFunc2.constructor()
   expect(typeof cusFunc2.test1).toBe('function');
   expect(typeof cusFunc2.test2).toBe('function');
   expect(typeof cusFunc3.test2).toBe('function');
-  controller.removeMethod()
+  controller.removeProp()
   expect(cusFunc.test1).toBe(undefined);
   expect(cusFunc.test2).toBe(undefined);
   expect(cusFunc2.test1).toBe(undefined);
