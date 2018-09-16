@@ -8,7 +8,7 @@ test('create Array controller', () => {
   expect(typeof controller.unMount).toBe('function')
   expect(typeof controller.addBefore).toBe('function')
   expect(typeof controller.addAfter).toBe('function')
-  expect(typeof controller.customMethodList).toBe('function')
+  expect(typeof controller.customPropList).toBe('function')
   // controller.unMount()
 });
 

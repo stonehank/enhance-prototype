@@ -1,4 +1,6 @@
 const checkIfNeedController=require("./checkIfNeedController");
+const checkThisInArrowFunction=require("./checkThisInArrowFunction")
+
 
 function createEnhanceInProto(originalClass){
   let controller;
@@ -36,29 +38,53 @@ function createEnhanceInProto(originalClass){
       let originalProto=Object.getPrototypeOf(enhanceProto);
       enhanceProto=Object.create(originalProto);
       Object.setPrototypeOf( originalClass.prototype,enhanceProto)
+      return controller
     }
     delete(enhanceProto[key])
+    return controller
   }
   function addBefore(originalName,extraFunc,context){
+    if(typeof extraFunc==="function"){
+      if(checkThisInArrowFunction(extraFunc))
+        throw new Error ('custom should not be ArrowFunction if need to use this!')
+    }
     let originalFunc=originalClass.prototype[originalName];
     originalClass.prototype[originalName]= function(...args){
       extraFunc.call(context||this,...args);
       originalFunc.call(this,...args)
     }
+    return controller
   }
-  function addAfter(originalName,extraFunc,context=originalClass){
+  function addAfter(originalName,extraFunc,context){
+    if(typeof extraFunc==="function"){
+      if(checkThisInArrowFunction(extraFunc))
+        throw new Error ('custom should not be ArrowFunction if need to use this!')
+    }
     let originalFunc=originalClass.prototype[originalName];
     originalClass.prototype[originalName]= function(...args){
       originalFunc.call(this,...args);
       extraFunc.call(context || this)
     }
+    return controller
   }
   function unMount() {
     Object.setPrototypeOf( originalClass.prototype,initProto);
     for(let k in controller){
-      if(k!=='retrieve')
-        delete(controller[k])
+      // if(k!=='retrieve')
+      delete(controller[k])
     }
+    controller.retrieve=function () {
+      controller.addProp=addProp;
+      controller.removeProp=removeProp;
+      controller.unMount=unMount;
+      controller.addBefore=addBefore;
+      controller.customPropList=function(){
+        return enhanceProto
+      };
+      Object.setPrototypeOf(originalClass.prototype,enhanceProto);
+      return controller
+    }
+    return controller
   }
   controller= {
     addProp,
@@ -66,20 +92,9 @@ function createEnhanceInProto(originalClass){
     unMount:unMount,
     addBefore,
     addAfter,
-    customMethodList:function(){
+    customPropList:function(){
       return enhanceProto
     },
-    retrieve:function () {
-      controller.addProp=addProp;
-      controller.removeProp=removeProp;
-      controller.unMount=unMount;
-      controller.addBefore=addBefore;
-      controller.customMethodList=function(){
-        return enhanceProto
-      };
-      Object.setPrototypeOf(originalClass.prototype,enhanceProto);
-      return controller
-    }
   };
   return controller
 }
@@ -146,7 +161,7 @@ function createEnhanceOutofProto(originalClass){
       delete(enhanceProto[key]);
       return controller
     },
-    customMethodList:function(){
+    customPropList:function(){
       return enhanceProto
     },
     toEnhance:function (structure) {
