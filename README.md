@@ -9,6 +9,12 @@
 
 ----------
 
+#### 安装
+
+`npm install enhance-prototype --save`
+
+------
+
 #### 例子
 
 * 创建控制器

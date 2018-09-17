@@ -12,6 +12,19 @@ test('create Array controller', () => {
   // controller.unMount()
 });
 
+test('add method', () => {
+  let controller=createEnhanceInProto(Array)
+  controller.addProp('immutablePush',function () {
+    let newArr=this.slice()
+    newArr.push(...arguments)
+    return newArr
+  })
+  let arr=[1,2,3]
+  expect(arr.immutablePush(4)).toEqual([1,2,3,4])
+  expect(arr).toEqual([1,2,3])
+  controller.unMount()
+});
+
 test('add method before', () => {
   let controller=createEnhanceInProto(Array)
   let aux=[]
