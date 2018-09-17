@@ -10,26 +10,30 @@ function createEnhanceInProto(originalClass){
 
   function addProp(key,value){
     if(typeof value!=='function')  enhanceProto[key]=value;
-    else enhanceProto[key]=function(){
-      if(checkIfNeedController(value)){
-        // use try...catch because if write like "addProp('xx',class{...})",should use "new"
-        try{
-          return value.call(this,controller,...arguments)
-        }catch(e){
-          if(e.message.includes("invoked without 'new'"))
-            value=value.bind(this,controller,...arguments);
-          return new value
+    else {
+      if(checkThisInArrowFunction(value))
+        throw new Error (`Custom method should not be ArrowFunction if need to use "this"!`)
+      enhanceProto[key]=function(){
+        if(checkIfNeedController(value)){
+          // use try...catch because if write like "addProp('xx',class{...})",should use "new"
+          try{
+            return value.call(this,controller,...arguments)
+          }catch(e){
+            if(e.message.includes("invoked without 'new'"))
+              value=value.bind(this,controller,...arguments);
+            return new value
+          }
+        }else{
+          try{
+            return value.call(this,...arguments)
+          }catch(e){
+            if(e.message.includes("invoked without 'new'"))
+              value=value.bind(this,...arguments);
+            return new value
+          }
         }
-      }else{
-        try{
-          return value.call(this,...arguments)
-        }catch(e){
-          if(e.message.includes("invoked without 'new'"))
-            value=value.bind(this,...arguments);
-          return new value
-        }
-      }
-    };
+      };
+    }
     return controller
   }
 
@@ -46,7 +50,7 @@ function createEnhanceInProto(originalClass){
   function addBefore(originalName,extraFunc,context){
     if(typeof extraFunc==="function"){
       if(checkThisInArrowFunction(extraFunc))
-        throw new Error ('custom should not be ArrowFunction if need to use this!')
+        throw new Error (`Custom method should not be ArrowFunction if need to use "this"!`)
     }
     let originalFunc=originalClass.prototype[originalName];
     originalClass.prototype[originalName]= function(...args){
@@ -58,7 +62,7 @@ function createEnhanceInProto(originalClass){
   function addAfter(originalName,extraFunc,context){
     if(typeof extraFunc==="function"){
       if(checkThisInArrowFunction(extraFunc))
-        throw new Error ('custom should not be ArrowFunction if need to use this!')
+        throw new Error (`Custom method should not be ArrowFunction if need to use "this"!`)
     }
     let originalFunc=originalClass.prototype[originalName];
     originalClass.prototype[originalName]= function(...args){
@@ -129,26 +133,30 @@ function createEnhanceOutofProto(originalClass){
     },
     addProp:function(key,value){
       if(typeof value!=='function')  enhanceProto[key]=value;
-      else enhanceProto[key]=function(){
-        if(checkIfNeedController(value)){
-          // use try...catch because if write like "addProp('xx',class{...})",should use "new"
-          try{
-            return value.call(this,controller,...arguments)
-          }catch(e){
-            if(e.message.includes("invoked without 'new'"))
-              value=value.bind(this,controller,...arguments);
-            return new value
+      else {
+        if(checkThisInArrowFunction(value))
+          throw new Error (`Custom method should not be ArrowFunction if need to use "this"!`)
+        enhanceProto[key]=function(){
+          if(checkIfNeedController(value)){
+            // use try...catch because if write like "addProp('xx',class{...})",should use "new"
+            try{
+              return value.call(this,controller,...arguments)
+            }catch(e){
+              if(e.message.includes("invoked without 'new'"))
+                value=value.bind(this,controller,...arguments);
+              return new value
+            }
+          }else{
+            try{
+              return value.call(this,...arguments)
+            }catch(e){
+              if(e.message.includes("invoked without 'new'"))
+                value=value.bind(this,...arguments);
+              return new value
+            }
           }
-        }else{
-          try{
-            return value.call(this,...arguments)
-          }catch(e){
-            if(e.message.includes("invoked without 'new'"))
-              value=value.bind(this,...arguments);
-            return new value
-          }
-        }
-      };
+        };
+      }
       return controller
     },
     removeProp:function(key){
