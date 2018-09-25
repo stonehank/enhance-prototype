@@ -24,7 +24,7 @@ let ctrl=createEnhanceInProto(Array)
 ```
 * 添加自定义方法
 ```js
-ctrl.addMethod('sum',()=>{
+ctrl.addProp('sum',()=>{
   this.reduce((acc,cur)=>acc+cur,0)
 })
 ```
