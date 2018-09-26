@@ -55,7 +55,8 @@ function createEnhanceInProto(originalClass){
     let originalFunc=originalClass.prototype[originalName];
     originalClass.prototype[originalName]= function(...args){
       extraFunc.call(context||this,...args);
-      originalFunc.call(this,...args)
+      let originReturn=originalFunc.call(this,...args)
+      if(originReturn)return originReturn
     }
     return controller
   }
@@ -66,8 +67,9 @@ function createEnhanceInProto(originalClass){
     }
     let originalFunc=originalClass.prototype[originalName];
     originalClass.prototype[originalName]= function(...args){
-      originalFunc.call(this,...args);
-      extraFunc.call(context || this)
+      let originReturn=originalFunc.call(this,...args);
+      let extraReturn=extraFunc.call(context || this,...args)
+      return originReturn || extraReturn
     }
     return controller
   }

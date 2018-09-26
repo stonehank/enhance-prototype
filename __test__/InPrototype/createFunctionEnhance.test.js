@@ -24,6 +24,25 @@ test('add method', () => {
   controller.unMount()
 });
 
+test('add method', () => {
+  let controller=createEnhanceInProto(Function)
+  controller.addProp('getName',function (controller) {
+    controller.addProp("_cloneName_",this.name)
+  })
+
+  controller.addBefore("__defineGetter__",function(){
+    this.getName()
+  })
+  let aFn=function loc_1_13(){}
+
+  aFn.__defineGetter__("name",function(){
+    return this._cloneName_+"origin"
+  })
+  expect(aFn.name).toBe("loc_1_13origin")
+  expect(aFn._cloneName_).toBe("loc_1_13")
+  controller.unMount()
+});
+
 
 
 

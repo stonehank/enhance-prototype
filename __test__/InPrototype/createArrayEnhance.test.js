@@ -42,7 +42,7 @@ test('add method before', () => {
 test('add method after', () => {
   let controller=createEnhanceInProto(Array)
   let aux=[]
-  controller.addBefore('push',function () {
+  controller.addAfter('push',function () {
       aux=this
   })
   let arr=[1,2,3]
@@ -51,6 +51,34 @@ test('add method after', () => {
   controller.unMount()
 });
 
+test('addBefore do not have return statement', () => {
+  let controller=createEnhanceInProto(Array)
+  let aux=[]
+  controller.addBefore('push',function () {
+    return 1
+  })
+  let arr=[1,2,3]
+  let returnValue=arr.push(4)
+  expect(returnValue).toBe(4)
+  controller.unMount()
+});
+
+test('addAfter  have return statement, but will fail to race the raw method', () => {
+  let controller=createEnhanceInProto(Array)
+  let aux=[]
+  controller.addAfter('push',function () {
+    return "raw push have return statement"
+  })
+  controller.addAfter('forEach',function () {
+    return "raw forEach do not have return statement"
+  })
+  let arr=[1,2,3]
+  let pushReturn=arr.push(123)
+  let forEachReturn=arr.forEach(n=>n*2)
+  expect(pushReturn).toBe(4)
+  expect(forEachReturn).toBe("raw forEach do not have return statement")
+  controller.unMount()
+});
 
 test('add property', () => {
   let controller=createEnhanceInProto(Array)
