@@ -1,5 +1,5 @@
 
-const arrowFnChecker=/(\(.*?\)|\w*)\s*=>(.*)/
+const arrowFnChecker=/^(\(.*?\)|\w*)\s*=>(.*)/
 const evalChecker=/eval\s*\(\s*('|"|`)(.*?)\1\)/
 
 function checkIfHasThis(str){
